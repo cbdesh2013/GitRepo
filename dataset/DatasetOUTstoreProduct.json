@@ -1,0 +1,27 @@
+{
+	"name": "DatasetOUTstoreProduct",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LinkStorage",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "SQLtoStore"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "Products.csv",
+				"container": "outputs"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

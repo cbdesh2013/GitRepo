@@ -1,0 +1,138 @@
+{
+	"name": "PipeParamsVars",
+	"properties": {
+		"activities": [
+			{
+				"name": "InitializeVarFile",
+				"type": "SetVariable",
+				"dependsOn": [],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "Files",
+					"value": [
+						"colors",
+						"inventories",
+						"inventory_parts",
+						"part_categories",
+						"parts",
+						"sets",
+						"themes"
+					]
+				}
+			},
+			{
+				"name": "CondOnUserInput",
+				"type": "IfCondition",
+				"dependsOn": [
+					{
+						"activity": "InitializeVarFile",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"expression": {
+						"value": "@pipeline().parameters.IsWorkingFiles",
+						"type": "Expression"
+					},
+					"ifFalseActivities": [
+						{
+							"name": "InitializeListAllWithElse",
+							"description": "",
+							"type": "SetVariable",
+							"dependsOn": [],
+							"policy": {
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "ListOfAllFiles",
+								"value": "There are no values here."
+							}
+						}
+					],
+					"ifTrueActivities": [
+						{
+							"name": "ActivityTrueAppendVar",
+							"type": "AppendVariable",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "Files",
+								"value": "inventory_sets"
+							}
+						},
+						{
+							"name": "ActivityAppendAnother",
+							"type": "AppendVariable",
+							"dependsOn": [
+								{
+									"activity": "ActivityTrueAppendVar",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "Files",
+								"value": "part_relationships"
+							}
+						},
+						{
+							"name": "ActivityInitializeVarListAll",
+							"type": "SetVariable",
+							"dependsOn": [
+								{
+									"activity": "ActivityAppendAnother",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "ListOfAllFiles",
+								"value": {
+									"value": "load @{length(variables('Files'))} files as: @{join(variables('Files'), ',')}",
+									"type": "Expression"
+								}
+							}
+						}
+					]
+				}
+			}
+		],
+		"parameters": {
+			"IsWorkingFiles": {
+				"type": "bool",
+				"defaultValue": false
+			}
+		},
+		"variables": {
+			"Files": {
+				"type": "Array"
+			},
+			"ListOfAllFiles": {
+				"type": "String"
+			}
+		},
+		"folder": {
+			"name": "ParamsVars"
+		},
+		"annotations": [],
+		"lastPublishTime": "2024-12-19T10:39:41Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

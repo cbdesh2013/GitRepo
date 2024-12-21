@@ -1,0 +1,112 @@
+{
+	"name": "DataflowTransformLoanData",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DatasetINloanDataFlow",
+						"type": "DatasetReference"
+					},
+					"name": "TransformLoanDataSource",
+					"description": "Uses DatasetINloanDataFlow for ingesting the data from LoanDataRaw.csv"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DatasetOUTmaleDataFlow",
+						"type": "DatasetReference"
+					},
+					"name": "TransformSinkStreamMale"
+				},
+				{
+					"dataset": {
+						"referenceName": "DatasetOUTfemaleDataFlow",
+						"type": "DatasetReference"
+					},
+					"name": "TransformSinkStreamFemale"
+				}
+			],
+			"transformations": [
+				{
+					"name": "TransformTotalIncome",
+					"description": "Derive column TotalIncome as sum of ApplIncome and CoApplIncome"
+				},
+				{
+					"name": "TransformSelect"
+				},
+				{
+					"name": "TransformFilterDependents",
+					"description": "To filter in those records with Dependents < 3"
+				},
+				{
+					"name": "TransformSplitOnGender"
+				},
+				{
+					"name": "TrasformSortStreamMale"
+				},
+				{
+					"name": "TransformSortStreamFemale"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          Id as short,",
+				"          Loan_ID as string,",
+				"          Gender as integer,",
+				"          Marital as boolean,",
+				"          Dependents as short,",
+				"          Education as boolean,",
+				"          SelfEmplo as boolean,",
+				"          ApplIncome as integer,",
+				"          CoApplIncome as double,",
+				"          {Loan Amt} as short,",
+				"          Term as double,",
+				"          CreditHistory as double,",
+				"          PropArea as short,",
+				"          LoanStatus as boolean",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     inferDriftedColumnTypes: true,",
+				"     ignoreNoFilesFound: false) ~> TransformLoanDataSource",
+				"TransformLoanDataSource derive(TotalIncome = toFloat(ApplIncome) + CoApplIncome) ~> TransformTotalIncome",
+				"TransformTotalIncome select(mapColumn(",
+				"          Loan_ID,",
+				"          Gender,",
+				"          Marital,",
+				"          Dependents,",
+				"          Education,",
+				"          SelfEmplo,",
+				"          {Loan Amt},",
+				"          Term,",
+				"          PropArea,",
+				"          LoanStatus,",
+				"          TotalIncome",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> TransformSelect",
+				"TransformSelect filter(Dependents < 3) ~> TransformFilterDependents",
+				"TransformFilterDependents split(Gender == 1,",
+				"     Gender == 0,",
+				"     disjoint: false) ~> TransformSplitOnGender@(StreamMale, StreamFemale, Other)",
+				"TransformSplitOnGender@StreamMale sort(desc(Loan_ID, true)) ~> TrasformSortStreamMale",
+				"TransformSplitOnGender@StreamFemale sort(asc(Loan_ID, true)) ~> TransformSortStreamFemale",
+				"TrasformSortStreamMale sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['LoanData_male.csv'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> TransformSinkStreamMale",
+				"TransformSortStreamFemale sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['LoanData_Female.csv'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> TransformSinkStreamFemale"
+			]
+		}
+	}
+}

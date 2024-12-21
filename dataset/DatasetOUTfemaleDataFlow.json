@@ -1,0 +1,28 @@
+{
+	"name": "DatasetOUTfemaleDataFlow",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LinkStorage",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "LoanDataFlow"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "LoanFemalewise.csv",
+				"folderPath": "loan",
+				"container": "outputs"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

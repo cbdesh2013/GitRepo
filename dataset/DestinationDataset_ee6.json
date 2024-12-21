@@ -1,0 +1,23 @@
+{
+	"name": "DestinationDataset_ee6",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LinkStorage",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "Lab01"
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "LoanData.json",
+				"container": "outputs"
+			}
+		},
+		"schema": {}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

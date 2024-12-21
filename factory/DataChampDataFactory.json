@@ -1,0 +1,9 @@
+{
+	"name": "DataChampDataFactory",
+	"location": "centralindia",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "b34fb1a4-86e7-4337-a174-8d794ea77319",
+		"tenantId": "07df7265-a591-4ade-991c-ac6e133042f9"
+	}
+}

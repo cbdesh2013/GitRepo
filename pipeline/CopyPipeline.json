@@ -1,0 +1,193 @@
+{
+	"name": "CopyPipeline",
+	"properties": {
+		"activities": [
+			{
+				"name": "Copy_ee6",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [
+					{
+						"name": "Source",
+						"value": "data/loan/LoanData_Raw.csv"
+					},
+					{
+						"name": "Destination",
+						"value": "outputs//LoanData.json"
+					}
+				],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": false,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings",
+							"skipLineCount": 0
+						}
+					},
+					"sink": {
+						"type": "JsonSink",
+						"storeSettings": {
+							"type": "AzureBlobStorageWriteSettings"
+						},
+						"formatSettings": {
+							"type": "JsonWriteSettings",
+							"filePattern": "arrayOfObjects"
+						}
+					},
+					"enableStaging": false,
+					"validateDataConsistency": false,
+					"dataIntegrationUnits": 4,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "Loan_ID",
+									"type": "String"
+								},
+								"sink": {
+									"path": "$['Loan_ID']"
+								}
+							},
+							{
+								"source": {
+									"name": "Gender",
+									"type": "Int16"
+								},
+								"sink": {
+									"path": "$['Gender']"
+								}
+							},
+							{
+								"source": {
+									"name": "Marital",
+									"type": "Int16"
+								},
+								"sink": {
+									"path": "$['Marital']"
+								}
+							},
+							{
+								"source": {
+									"name": "Dependents",
+									"type": "Int16"
+								},
+								"sink": {
+									"path": "$['Dependents']"
+								}
+							},
+							{
+								"source": {
+									"name": "Education",
+									"type": "Int16"
+								},
+								"sink": {
+									"path": "$['Education']"
+								}
+							},
+							{
+								"source": {
+									"name": "SelfEmplo",
+									"type": "Int16"
+								},
+								"sink": {
+									"path": "$['SelfEmplo']"
+								}
+							},
+							{
+								"source": {
+									"name": "ApplIncome",
+									"type": "Double"
+								},
+								"sink": {
+									"path": "$['ApplIncome']"
+								}
+							},
+							{
+								"source": {
+									"name": "CoApplIncome",
+									"type": "Double"
+								},
+								"sink": {
+									"path": "$['CoApplIncome']"
+								}
+							},
+							{
+								"source": {
+									"name": "Loan Amt",
+									"type": "Double"
+								},
+								"sink": {
+									"path": "$['Loan Amt']"
+								}
+							},
+							{
+								"source": {
+									"name": "Term",
+									"type": "Double"
+								},
+								"sink": {
+									"path": "$['Term']"
+								}
+							},
+							{
+								"source": {
+									"name": "CreditHistory",
+									"type": "String"
+								},
+								"sink": {
+									"path": "$['CreditHistory']"
+								}
+							},
+							{
+								"source": {
+									"name": "PropArea",
+									"type": "Int16"
+								},
+								"sink": {
+									"path": "$['PropArea']"
+								}
+							},
+							{
+								"source": {
+									"name": "LoanStatus",
+									"type": "String"
+								},
+								"sink": {
+									"path": "$['LoanStatus']"
+								}
+							}
+						]
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "SourceDataset_ee6",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "DestinationDataset_ee6",
+						"type": "DatasetReference"
+					}
+				]
+			}
+		],
+		"annotations": [],
+		"lastPublishTime": "2024-12-18T10:18:59Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

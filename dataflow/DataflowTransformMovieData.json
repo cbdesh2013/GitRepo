@@ -1,0 +1,58 @@
+{
+	"name": "DataflowTransformMovieData",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DatasetINmoviesDataFlow",
+						"type": "DatasetReference"
+					},
+					"name": "TransformSource",
+					"description": "It takes the data from MovieDB.csv stored in Blob Storage"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DatasetOUTaggMoviesDataFlow",
+						"type": "DatasetReference"
+					},
+					"name": "TransformAggToStore",
+					"description": "It will write the aggregated data to Store."
+				}
+			],
+			"transformations": [
+				{
+					"name": "TransformFilterYear",
+					"description": "Filter data for range of years 1910-2000"
+				},
+				{
+					"name": "TransformGroupYearAggRatings"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          movie as integer,",
+				"          title as string,",
+				"          genres as string,",
+				"          year as short,",
+				"          Rating as string,",
+				"          {Rotton Tomato} as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> TransformSource",
+				"TransformSource filter(year >= 1910 && year <= 2000 && rlike(genres, 'Comedy')) ~> TransformFilterYear",
+				"TransformFilterYear aggregate(groupBy(year),",
+				"     AvgOnRatings = avg(toFloat(Rating))) ~> TransformGroupYearAggRatings",
+				"TransformGroupYearAggRatings sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> TransformAggToStore"
+			]
+		}
+	}
+}
